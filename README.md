@@ -2,6 +2,8 @@
 
 #### Name : Jeeva K
 #### Reg No : 212223230090
+#### date :
+
 
 ## Aim: 
 To Interface a 16X2 LCD display to ARM controller  , and simulate it in Proteus 
@@ -177,13 +179,9 @@ https://engineeringxpert.com/wp-content/uploads/2022/04/26.png
 
 
 ## STM 32 CUBE PROGRAM :
-```
-#include "lcd.h"
+```c
 #include "main.h"
-Lcd_PortType ports[]={GPIOA,GPIOA,GPIOA,GPIOA};
-Lcd_PinType pins[]={GPIO_PIN_3,GPIO_PIN_2,GPIO_PIN_1,GPIO_PIN_0};
-Lcd_HandleTypeDef lcd;
-
+#include "lcd.h"
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -191,37 +189,106 @@ static void MX_GPIO_Init(void);
 int main(void)
 {
   HAL_Init();
+
   SystemClock_Config();
+
   MX_GPIO_Init();
-  lcd=Lcd_create(ports,pins,GPIOB,GPIO_PIN_0,GPIOB,GPIO_PIN_1,LCD_4_BIT_MODE);
+
+  Lcd_PortType ports[] = {GPIOA,GPIOA,GPIOA,GPIOA};
+  Lcd_PinType pins[] = {GPIO_PIN_5,GPIO_PIN_4,GPIO_PIN_3,GPIO_PIN_2};
+    Lcd_HandleTypeDef lcd;
+  lcd = Lcd_create(ports,pins,GPIOB,GPIO_PIN_4,GPIOB,GPIO_PIN_3,LCD_4_BIT_MODE);
+    Lcd_cursor(&lcd, 0,0);
+    Lcd_string(&lcd,"JEEVA K");
+    Lcd_cursor(&lcd, 1,0);
+    Lcd_string(&lcd,"212223230090");
+    HAL_Delay(500);
   while (1)
   {
-    lcd_display();
+    
   }
 }
 
-void lcd_display(){
-	Lcd_cursor(&lcd,0,1);
-	Lcd_string(&lcd,"JEEVA K\n");
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-	Lcd_cursor(&lcd,1,1);
-	Lcd_string(&lcd,"212223230090\n");
+  __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
+
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3|GPIO_PIN_4, GPIO_PIN_RESET);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+}
+void Error_Handler(void)
+{
+  __disable_irq();
+  while (1)
+  {
+  }
+
+}
+void assert_failed(uint8_t *file, uint32_t line)
+{
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
+}
 
 ```
 
 
 
 ## Output screen shots of proteus  :
-<img width="765" height="540" alt="Screenshot 2025-09-22 142551" src="https://github.com/user-attachments/assets/be974d4d-9fb9-455a-bced-f83beea7d2bd" />
+<img width="1190" height="836" alt="Screenshot 2025-09-29 134044" src="https://github.com/user-attachments/assets/b9f37beb-d76d-4ba8-8bff-b2b36542524b" />
 
-<img width="778" height="548" alt="Screenshot 2025-09-22 142712" src="https://github.com/user-attachments/assets/31507d3e-4a5f-446e-9efd-d8186ab5bdb8" />
+<img width="1190" height="836" alt="Screenshot 2025-09-22 142712" src="https://github.com/user-attachments/assets/31507d3e-4a5f-446e-9efd-d8186ab5bdb8" />
 
 ## CIRCUIT DIAGRAM (EXPORT THE GRAPHICS TO PDF AND ADD THE SCREEN SHOT HERE): 
 
-<img width="552" height="456" alt="Screenshot 2025-09-22 142514" src="https://github.com/user-attachments/assets/f2906dd2-60e0-4183-abeb-4b8cb21a04cd" />
+<img width="1190" height="836" alt="Screenshot 2025-09-29 134138" src="https://github.com/user-attachments/assets/f186903a-6b0e-4523-8e09-b106084c9041" />
 
 
 ## Result :
